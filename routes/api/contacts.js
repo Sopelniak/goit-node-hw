@@ -6,9 +6,14 @@ const contactsActions = require("../../models/contacts");
 const router = express.Router();
 
 const addSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().required(),
-  phone: Joi.string().required(),
+  name: Joi.string().min(2).max(20).required(),
+  email: Joi.string()
+    .email({
+      minDomainSegments: 1,
+      tlds: { allow: ["com", "net", "org", "uk", "ka", "ua"] },
+    })
+    .required(),
+  phone: Joi.string().min(6).max(17).required(),
 });
 
 router.get("/", async (req, res, next) => {
