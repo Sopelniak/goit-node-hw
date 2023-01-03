@@ -7,10 +7,6 @@ const emailRegexp = /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/;
 
 const userSchema = new Schema(
     {
-        name: {
-            type: String,
-            required: true,
-        },
         password: {
             type: String,
             required: [true, 'Set password for user'],
@@ -25,7 +21,7 @@ const userSchema = new Schema(
             enum: ['starter', 'pro', 'business'],
             default: 'starter',
         },
-        token: String,
+        token: { type: String },
     },
     { versionKey: false, timestamps: true }
 );
@@ -33,7 +29,6 @@ const userSchema = new Schema(
 userSchema.post('save', handleMongooseError);
 
 const registerSchema = Joi.object({
-    name: Joi.string().required(),
     email: Joi.string().pattern(emailRegexp).required(),
     password: Joi.string().min(6).required(),
 });
