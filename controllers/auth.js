@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const jwt = require('jsonwebtoken');
+const Jimp = require('jimp');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const gravatar = require('gravatar');
@@ -80,7 +81,16 @@ const updateAvatar = async (req, res) => {
     const { path: tempUpload, originalname } = req.file;
     const filename = `${_id}_${originalname}`;
     const resultUpload = path.join(avatarsDir, filename);
-    await fs.rename(tempUpload, resultUpload);
+
+    Jimp.read(tempUpload, (err, avatar) => {
+        if (err) throw err;
+        avatar
+            .resize(250, 250) // resize
+            .quality(60) // set JPEG quality
+            .greyscale() // set greyscale
+            .writeAsync(resultUpload); // save
+    });
+    await fs.unlink(tempUpload);
     const avatarURL = path.join('avatars', filename);
     await User.findByIdAndUpdate(_id, { avatarURL });
 
